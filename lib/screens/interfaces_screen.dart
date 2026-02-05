@@ -524,23 +524,23 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
             final ssid = iwinfo['ssid'] ?? config['ssid'] ?? '';
             final deviceName = config['device'] ?? radioName;
             interfacesList.add({
-              'name': config['ssid'] ?? iwinfo['ssid'] ?? 'Unnamed',
+              'name': config['ssid'] ?? iwinfo['ssid'] ?? '未命名',
               'subtitle':
-                  '${config['mode']?.toUpperCase() ?? iwinfo['mode']?.toUpperCase() ?? 'N/A'} • Ch. ${iwinfo['channel']?.toString() ?? config['channel']?.toString() ?? 'N/A'}',
+                '${config['mode']?.toUpperCase() ?? iwinfo['mode']?.toUpperCase() ?? 'N/A'} • 信道 ${iwinfo['channel']?.toString() ?? config['channel']?.toString() ?? 'N/A'}',
               'isEnabled': isEnabled,
               'deviceName': deviceName,
               'radioName': radioName,
               'ssid': ssid,
               'interfaceName': name,
               'details': {
-                'Device': config['device'] ?? radioName,
-                'Mode': config['mode'] ?? iwinfo['mode'] ?? 'N/A',
-                'Channel':
-                    iwinfo['channel']?.toString() ??
-                    config['channel']?.toString() ??
-                    'N/A',
-                'Signal': '${iwinfo['signal']?.toString() ?? '--'} dBm',
-                'Network': (config['network'] is List)
+                '设备': config['device'] ?? radioName,
+                '模式': config['mode'] ?? iwinfo['mode'] ?? 'N/A',
+                '信道':
+                  iwinfo['channel']?.toString() ??
+                  config['channel']?.toString() ??
+                  'N/A',
+                '信号': '${iwinfo['signal']?.toString() ?? '--'} dBm',
+                '网络': (config['network'] is List)
                     ? (config['network'] as List).join(', ')
                     : config['network'] ?? 'N/A',
               },
@@ -557,20 +557,20 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
         final isIfaceEnabled = config['disabled'] != '1';
         final isEnabled = isRadioEnabled && isIfaceEnabled;
 
-        final name = config['ssid'] ?? 'Unnamed';
+        final name = config['ssid'] ?? '未命名';
         interfacesList.add({
-          'name': config['ssid'] ?? 'Unnamed',
-          'subtitle': '${config['mode']?.toUpperCase() ?? 'N/A'} • Disabled',
+          'name': config['ssid'] ?? '未命名',
+          'subtitle': '${config['mode']?.toUpperCase() ?? 'N/A'} • 已禁用',
           'isEnabled': isEnabled,
           'deviceName': radioName,
           'radioName': radioName,
           'ssid': name,
           'interfaceName': name,
           'details': {
-            'Device': radioName,
-            'Mode': config['mode'] ?? 'N/A',
+            '设备': radioName,
+            '模式': config['mode'] ?? 'N/A',
             'SSID': config['ssid'] ?? 'N/A',
-            'Network': (config['network'] is List)
+            '网络': (config['network'] is List)
                 ? (config['network'] as List).join(', ')
                 : config['network'] ?? 'N/A',
           },
