@@ -332,7 +332,7 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
     final appState = ref.read(appStateProvider);
 
     return Scaffold(
-      appBar: const LuciAppBar(title: 'Interfaces'),
+      appBar: const LuciAppBar(title: '接口'),
       body: SafeArea(
         top: true,
         bottom: false,
@@ -373,10 +373,10 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
 
                   if (dashboardError != null && dashboardData == null) {
                     return LuciErrorDisplay(
-                      title: 'Failed to Load Interfaces',
+                      title: '加载接口失败',
                       message:
-                          'Could not connect to the router. Please check your network connection and router settings.',
-                      actionLabel: 'Retry',
+                          '无法连接到路由器。请检查您的网络连接和路由器设置。',
+                      actionLabel: '重试',
                       onAction: () => appState.fetchDashboardData(),
                       icon: Icons.wifi_off_rounded,
                     );
@@ -384,11 +384,11 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
 
                   if (dashboardData == null) {
                     return LuciEmptyState(
-                      title: 'No Interface Data',
+                      title: '没有接口数据',
                       message:
-                          'Unable to fetch interface information. Pull down to refresh or tap the button below.',
+                          '无法获取接口信息。下拉刷新或点击下面的按钮。',
                       icon: Icons.device_hub_outlined,
-                      actionLabel: 'Fetch Data',
+                      actionLabel: '获取数据',
                       onAction: () => appState.fetchDashboardData(),
                     );
                   }
@@ -396,9 +396,9 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
                   return CustomScrollView(
                     controller: _scrollController,
                     slivers: [
-                      SliverToBoxAdapter(child: LuciSectionHeader('Wired')),
+                      SliverToBoxAdapter(child: LuciSectionHeader('有线')),
                       _buildWiredInterfacesList(),
-                      SliverToBoxAdapter(child: LuciSectionHeader('Wireless')),
+                      SliverToBoxAdapter(child: LuciSectionHeader('无线')),
                       _buildWirelessInterfacesList(),
                       SliverToBoxAdapter(
                         child: Padding(
@@ -631,33 +631,33 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
   Widget _buildWiredDetails(BuildContext context, NetworkInterface interface) {
     return Column(
       children: [
-        _buildDetailRow(context, 'Device', interface.device),
-        _buildDetailRow(context, 'Uptime', interface.formattedUptime),
+        _buildDetailRow(context, '设备', interface.device),
+        _buildDetailRow(context, '正常运行时间', interface.formattedUptime),
         if (interface.ipAddress != null)
           _buildDetailRow(
             context,
-            'IP Address',
+            'IP 地址',
             interface.ipAddress!,
             onTap: () =>
-                _copyToClipboard(context, interface.ipAddress!, 'IP Address'),
+                _copyToClipboard(context, interface.ipAddress!, 'IP 地址'),
           ),
         if (interface.ipv6Addresses != null &&
             interface.ipv6Addresses!.isNotEmpty)
           ...interface.ipv6Addresses!.map(
             (ipv6) => _buildDetailRow(
               context,
-              'IPv6 Address',
+              'IPv6 地址',
               ipv6,
-              onTap: () => _copyToClipboard(context, ipv6, 'IPv6 Address'),
+              onTap: () => _copyToClipboard(context, ipv6, 'IPv6 地址'),
             ),
           ),
         if (interface.gateway != null)
           _buildDetailRow(
             context,
-            'Gateway',
+            '网关',
             interface.gateway!,
             onTap: () =>
-                _copyToClipboard(context, interface.gateway!, 'Gateway IP'),
+                _copyToClipboard(context, interface.gateway!, '网关 IP'),
           ),
         if (interface.dnsServers.isNotEmpty)
           _buildDetailRow(
@@ -667,7 +667,7 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
             onTap: () => _copyToClipboard(
               context,
               interface.dnsServers.join(', '),
-              'DNS Servers',
+              'DNS 服务器',
             ),
           ),
         // Add WireGuard peer information if this is a WireGuard interface
@@ -745,7 +745,7 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
         ? '${publicKey.substring(0, 8)}...${publicKey.substring(publicKey.length - 8)}'
         : publicKey;
     String formatHandshakeTime(int timestamp) {
-      if (timestamp == 0) return 'Never';
+      if (timestamp == 0) return '从未';
       final now = DateTime.now();
       final handshakeTime = DateTime.fromMillisecondsSinceEpoch(
         timestamp * 1000,
@@ -753,13 +753,13 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
       final difference = now.difference(handshakeTime);
       if (difference.inSeconds < 0) return 'Never';
       if (difference.inDays > 0) {
-        return '${difference.inDays}d ago';
+        return '${difference.inDays}天前';
       } else if (difference.inHours > 0) {
-        return '${difference.inHours}h ago';
+        return '${difference.inHours}小时前';
       } else if (difference.inMinutes > 0) {
-        return '${difference.inMinutes}m ago';
+        return '${difference.inMinutes}分钟前';
       } else {
-        return '${difference.inSeconds}s ago';
+        return '${difference.inSeconds}秒前';
       }
     }
 
@@ -810,7 +810,7 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Last Handshake',
+                      '最后握手',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontSize: 12,
@@ -835,7 +835,7 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Endpoint',
+                      '端点',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontSize: 12,
@@ -914,7 +914,7 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
                       child: Icon(
                         Icons.copy_all_outlined,
                         size: 16,
-                        semanticLabel: 'Copy',
+                        semanticLabel: '复制',
                       ),
                     ),
                   ),
@@ -930,7 +930,7 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$label copied to clipboard'),
+        content: Text('$label 已复制到剪贴板'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -949,14 +949,14 @@ class _InterfacesScreenState extends ConsumerState<InterfacesScreen> {
       children: [
         _buildStatColumn(
           context,
-          'Received',
+          '接收',
           formatBytes(stats['rx_bytes'] ?? 0),
           Icons.arrow_downward,
           Colors.green,
         ),
         _buildStatColumn(
           context,
-          'Transmitted',
+          '发送',
           formatBytes(stats['tx_bytes'] ?? 0),
           Icons.arrow_upward,
           Colors.blue,
@@ -1185,7 +1185,7 @@ class _UnifiedNetworkCardState extends State<_UnifiedNetworkCard>
                                   ? colorScheme.primary
                                   : colorScheme.onSurface,
                               size: 22,
-                              semanticLabel: 'Interface icon',
+                              semanticLabel: '接口图标',
                             ),
                           ),
                         ),
@@ -1194,8 +1194,8 @@ class _UnifiedNetworkCardState extends State<_UnifiedNetworkCard>
                           top: 0,
                           child: Tooltip(
                             message: widget.isUp
-                                ? 'Interface is up'
-                                : 'Interface is down',
+                                ? '接口已连接'
+                                : '接口已断开',
                             child: LuciStatusIndicators.statusDot(
                               context,
                               widget.isUp,
@@ -1212,7 +1212,7 @@ class _UnifiedNetworkCardState extends State<_UnifiedNetworkCard>
                           Text(
                             widget.name,
                             style: LuciTextStyles.cardTitle(context),
-                            semanticsLabel: 'Interface name: ${widget.name}',
+                            semanticsLabel: '接口名称：${widget.name}',
                           ),
                           const SizedBox(height: LuciSpacing.xs),
                           Container(
@@ -1228,7 +1228,7 @@ class _UnifiedNetworkCardState extends State<_UnifiedNetworkCard>
                             widget.subtitle,
                             style: LuciTextStyles.cardSubtitle(context),
                             semanticsLabel:
-                                'Interface details: ${widget.subtitle}',
+                                '接口详情：${widget.subtitle}',
                           ),
                         ],
                       ),
@@ -1238,7 +1238,7 @@ class _UnifiedNetworkCardState extends State<_UnifiedNetworkCard>
                         padding: const EdgeInsets.only(right: LuciSpacing.xs),
                         child: LuciStatusIndicators.statusChip(
                           context,
-                          'OFF',
+                          '关',
                           false,
                         ),
                       ),
@@ -1248,8 +1248,8 @@ class _UnifiedNetworkCardState extends State<_UnifiedNetworkCard>
                       color: colorScheme.onSurfaceVariant,
                       size: 26,
                       semanticLabel: _isExpanded
-                          ? 'Collapse details'
-                          : 'Expand details',
+                          ? '折叠详情'
+                          : '展开详情',
                     ),
                   ],
                 ),

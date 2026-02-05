@@ -101,7 +101,7 @@ class _LuciPullToRefreshState extends State<LuciPullToRefresh>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Refresh failed: ${e.toString()}'),
+            content: Text('刷新失败：${e.toString()}'),
             backgroundColor: Theme.of(context).colorScheme.error,
             behavior: SnackBarBehavior.floating,
             margin: EdgeInsets.all(LuciSpacing.md),
@@ -148,7 +148,7 @@ class LuciListPullToRefresh extends StatelessWidget {
     this.physics,
     this.shrinkWrap = false,
     this.padding,
-    this.emptyMessage = 'No items to display',
+    this.emptyMessage = '没有项目要浄示',
     this.emptyIcon = Icons.inbox_outlined,
     this.showEmptyState = true,
   });
@@ -214,7 +214,7 @@ class LuciListPullToRefresh extends StatelessWidget {
                   ),
                   SizedBox(height: LuciSpacing.sm),
                   Text(
-                    'Pull down to refresh',
+                    '下拉刷新',
                     style: LuciTextStyles.cardSubtitle(
                       context,
                     ).copyWith(color: Theme.of(context).colorScheme.outline),

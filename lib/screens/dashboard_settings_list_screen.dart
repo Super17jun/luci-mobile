@@ -14,7 +14,7 @@ class DashboardSettingsListScreen extends ConsumerWidget {
     final routers = appState.routers;
 
     return Scaffold(
-      appBar: const LuciAppBar(title: 'Dashboard Settings', showBack: true),
+      appBar: const LuciAppBar(title: '仪表板设置', showBack: true),
       body: routers.isEmpty
           ? Center(
               child: Padding(
@@ -25,12 +25,12 @@ class DashboardSettingsListScreen extends ConsumerWidget {
                     Icon(Icons.router_outlined, size: 56, color: Theme.of(context).colorScheme.outline),
                     SizedBox(height: LuciSpacing.md),
                     Text(
-                      'No Routers Added',
+                      '未添加路由器',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     SizedBox(height: LuciSpacing.xs),
                     Text(
-                      'Add a router to customize its dashboard settings.',
+                      '添加路由器以自定义其仪表板设置。',
                       style: Theme.of(context).textTheme.bodySmall,
                       textAlign: TextAlign.center,
                     ),

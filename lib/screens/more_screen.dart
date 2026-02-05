@@ -81,7 +81,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Router is back online, reconnecting…',
+                  '路由器已恢复在线，正在重新连接…',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onPrimary,
                   ),
@@ -110,17 +110,17 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Logout?'),
-          content: const Text('Are you sure you want to logout?'),
+          title: const Text('登出?'),
+          content: const Text('您确定要登出吗?'),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: const Text('取消'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Logout'),
+              child: const Text('登出'),
               onPressed: () async {
                 appState.logout();
                 // Clear all accepted certificates on logout
@@ -149,17 +149,17 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Reboot Router?'),
-          content: const Text('Are you sure you want to reboot the router?'),
+          title: const Text('重启路由器?'),
+          content: const Text('您确定要重启路由器吗?'),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: const Text('取消'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Reboot'),
+              child: const Text('重启'),
               onPressed: () async {
                 Navigator.of(context).pop();
                 // Show persistent warning snackbar
@@ -177,7 +177,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Rebooting… Connection will be interrupted.',
+                            '正在重启…连接将被中断。',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onPrimary,
                             ),
@@ -203,8 +203,8 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   SnackBar(
                     content: Text(
                       success
-                          ? 'Reboot command sent successfully.'
-                          : 'Failed to send reboot command.',
+                          ? '重启命令已成功发送。'
+                          : '重启命令发送失败。',
                     ),
                   ),
                 );
@@ -236,11 +236,11 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Version ${info.version}'),
+                Text('版本 ${info.version}'),
                 const SizedBox(height: 16),
-                const Text('A mobile client for OpenWrt routers.'),
+                const Text('用于 OpenWrt 路由器的移动客户端。'),
                 const SizedBox(height: 16),
-                const Text('Open source and free to use.'),
+                const Text('开源且免费使用。'),
                 const SizedBox(height: 16),
                 InkWell(
                   onTap: () async {
@@ -252,7 +252,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                     if (!success && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text('Could not open repository'),
+                          content: const Text('无法打开仓库'),
                           backgroundColor: Theme.of(context).colorScheme.error,
                         ),
                       );
@@ -268,7 +268,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'GitHub Repository',
+                          'GitHub 仓库',
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             decoration: TextDecoration.underline,
@@ -283,7 +283,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Close'),
+                child: const Text('关闭'),
               ),
             ],
           );
@@ -295,13 +295,13 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const LuciAppBar(title: 'More'),
+      appBar: const LuciAppBar(title: '更多'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: LuciSpacing.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const LuciSectionHeader('Device Management'),
+            const LuciSectionHeader('设备管理'),
             Builder(
               builder: (context) {
                 final isRebooting = ref.watch(
@@ -313,8 +313,8 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                       context,
                       icon: Icons.restart_alt,
                       iconColor: Theme.of(context).colorScheme.primary,
-                      title: 'Reboot Router',
-                      subtitle: 'Perform a system restart',
+                      title: '重启路由器',
+                      subtitle: '执行系统重启',
                       onTap: isRebooting
                           ? null
                           : () => _showRebootDialog(context),
@@ -325,15 +325,15 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                 );
               },
             ),
-            const LuciSectionHeader('Application'),
+            const LuciSectionHeader('应用程序'),
             _MoreScreenSection(
               tiles: [
                 _buildMoreTile(
                   context,
                   icon: Icons.router,
                   iconColor: Theme.of(context).colorScheme.primary,
-                  title: 'Manage Routers',
-                  subtitle: 'Edit or remove saved routers',
+                  title: '管理路由器',
+                  subtitle: '编辑或删除已保存的路由器',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -346,8 +346,8 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   context,
                   icon: Icons.settings_outlined,
                   iconColor: Theme.of(context).colorScheme.primary,
-                  title: 'Settings',
-                  subtitle: 'Configure app preferences',
+                  title: '设置',
+                  subtitle: '配置应用预设',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -360,16 +360,16 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   context,
                   icon: Icons.info_outline,
                   iconColor: Theme.of(context).colorScheme.secondary,
-                  title: 'About',
-                  subtitle: 'App version and information',
+                  title: '关于',
+                  subtitle: '应用版本和信息',
                   onTap: () => _showAboutDialog(context),
                 ),
                 _buildMoreTile(
                   context,
                   icon: Icons.logout,
                   iconColor: Theme.of(context).colorScheme.error,
-                  title: 'Logout',
-                  subtitle: 'End your session and sign out',
+                  title: '登出',
+                  subtitle: '结束会话并登出',
                   titleColor: Theme.of(context).colorScheme.error,
                   subtitleColor: Theme.of(
                     context,

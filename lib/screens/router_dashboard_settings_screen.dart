@@ -65,7 +65,7 @@ class _RouterDashboardSettingsScreenState
       if (appState.dashboardData == null) {
         setState(() {
           _errorMessage =
-              'Unable to load dashboard data. Please check your connection.';
+              '无法加载仪表板数据。请检查您的连接。';
           _isLoading = false;
         });
         return;
@@ -75,7 +75,7 @@ class _RouterDashboardSettingsScreenState
       setState(() => _isLoading = false);
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load settings: $e';
+        _errorMessage = '加载设置失败: $e';
         _isLoading = false;
       });
     }
@@ -165,8 +165,8 @@ class _RouterDashboardSettingsScreenState
   Widget _buildThroughputSection() {
     final interfaces = _availableWiredInterfaces.toList()..sort();
     return _buildSection(
-      title: 'Throughput Monitoring',
-      subtitle: 'Configure which interfaces to monitor',
+      title: '吞吐量监测',
+      subtitle: '配置要监测的接口',
       icon: Icons.speed,
       initiallyExpanded: true,
       children: [
@@ -180,7 +180,7 @@ class _RouterDashboardSettingsScreenState
             children: [
               SwitchListTile.adaptive(
                 title: Text(
-                  'Show All Interfaces',
+                  '显示所有接口',
                   style: LuciTextStyles.detailValue(context)
                       .copyWith(fontWeight: FontWeight.w600),
                 ),
@@ -246,8 +246,8 @@ class _RouterDashboardSettingsScreenState
     if (_availableWirelessInterfaces.isEmpty) return const SizedBox.shrink();
     final sortedInterfaces = _availableWirelessInterfaces.toList()..sort();
     return _buildSection(
-      title: 'Wireless Networks',
-      subtitle: 'Choose which wireless networks to display',
+      title: '无线网络',
+      subtitle: '选择要显示的无线网络',
       icon: Icons.wifi,
       children: [
         Container(
@@ -260,7 +260,7 @@ class _RouterDashboardSettingsScreenState
             children: [
               SwitchListTile.adaptive(
                 title: Text(
-                  'Show All Networks',
+                  '显示所有网络',
                   style: LuciTextStyles.detailValue(context)
                       .copyWith(fontWeight: FontWeight.w600),
                 ),
@@ -336,8 +336,8 @@ class _RouterDashboardSettingsScreenState
     if (_availableWiredInterfaces.isEmpty) return const SizedBox.shrink();
     final sortedInterfaces = _availableWiredInterfaces.toList()..sort();
     return _buildSection(
-      title: 'Network Interfaces',
-      subtitle: 'Choose which wired/VPN interfaces to display',
+      title: '网络接口',
+      subtitle: '选择要显示的有线/VPN 接口',
       icon: Icons.cable,
       children: [
         Container(
@@ -350,7 +350,7 @@ class _RouterDashboardSettingsScreenState
             children: [
               SwitchListTile.adaptive(
                 title: Text(
-                  'Show All Interfaces',
+                  '显示所有网络',
                   style: LuciTextStyles.detailValue(context)
                       .copyWith(fontWeight: FontWeight.w600),
                 ),
@@ -428,10 +428,10 @@ class _RouterDashboardSettingsScreenState
   Widget? _getInterfaceDescription(String interface) {
     final lower = interface.toLowerCase();
     if (lower.startsWith('wan')) {
-      return Text('Wide Area Network',
+      return Text('广域网',
           style: LuciTextStyles.cardSubtitle(context));
     } else if (lower.startsWith('lan')) {
-      return Text('Local Area Network',
+      return Text('局域网',
           style: LuciTextStyles.cardSubtitle(context));
     } else if (lower.contains('wireguard') || lower.startsWith('wg')) {
       return Text('WireGuard VPN',
@@ -439,7 +439,7 @@ class _RouterDashboardSettingsScreenState
     } else if (lower.contains('openvpn')) {
       return Text('OpenVPN', style: LuciTextStyles.cardSubtitle(context));
     } else if (lower.contains('pppoe')) {
-      return Text('PPPoE Connection',
+      return Text('PPPoE 连接',
           style: LuciTextStyles.cardSubtitle(context));
     }
     return null;
@@ -449,19 +449,19 @@ class _RouterDashboardSettingsScreenState
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        appBar: LuciAppBar(title: 'Dashboard Settings', showBack: true),
+        appBar: LuciAppBar(title: '仪表板设置', showBack: true),
         body: Center(child: CircularProgressIndicator()),
       );
     }
     if (_errorMessage != null) {
       return Scaffold(
-        appBar: const LuciAppBar(title: 'Dashboard Settings', showBack: true),
+        appBar: const LuciAppBar(title: '仪表板设置', showBack: true),
         body: Center(child: Text(_errorMessage!)),
       );
     }
 
     return Scaffold(
-      appBar: const LuciAppBar(title: 'Dashboard Settings', showBack: true),
+      appBar: const LuciAppBar(title: '仪表板设置', showBack: true),
       body: ListView(
         padding: EdgeInsets.symmetric(vertical: LuciSpacing.sm),
         children: [

@@ -81,7 +81,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen>
       builder: (context, snapshot) {
         final aggregatedClients = snapshot.data ?? [];
         return Scaffold(
-          appBar: const LuciAppBar(title: 'Clients'),
+          appBar: const LuciAppBar(title: '客户端'),
           body: Stack(
             children: [
               LuciPullToRefresh(
@@ -133,10 +133,10 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen>
 
                     if (dashboardError != null && aggregatedClients.isEmpty) {
                       return LuciErrorDisplay(
-                        title: 'Failed to Load Clients',
+                        title: '加载客户端失败',
                         message:
-                            'Could not connect to the router. Please check your network connection and the router\'s IP address.',
-                        actionLabel: 'Retry',
+                            '无法连接到路由器。请检查您的网络连接和路由器的IP地址。',
+                        actionLabel: '重试',
                         onAction: () =>
                             ref.read(appStateProvider).fetchDashboardData(),
                         icon: Icons.wifi_off_rounded,
@@ -170,7 +170,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen>
                             },
                             controller: _searchController,
                             decoration: InputDecoration(
-                              hintText: 'Search by name, IP, MAC, vendor...',
+                              hintText: '按名称、IP、MAC、供应商搜索...',
                               prefixIcon: const Icon(Icons.search),
                               suffixIcon: _searchQuery.isNotEmpty
                                   ? IconButton(
@@ -180,7 +180,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen>
                                           _searchController.clear();
                                         });
                                       },
-                                      tooltip: 'Clear search',
+                                      tooltip: '清除搜索',
                                     )
                                   : null,
                               filled: true,
@@ -207,12 +207,12 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen>
                             segments: const [
                               ButtonSegment<bool>(
                                 value: true,
-                                label: Text('All'),
+                                label: Text('全部'),
                                 icon: Icon(Icons.apartment),
                               ),
                               ButtonSegment<bool>(
                                 value: false,
-                                label: Text('Selected'),
+                                label: Text('已选择'),
                                 icon: Icon(Icons.router),
                               ),
                             ],
@@ -239,11 +239,11 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen>
                           child: filteredClients.isEmpty
                               ? LuciEmptyState(
                                   title: _searchQuery.isEmpty
-                                      ? 'No Active Clients Found'
-                                      : 'No Matching Clients',
+                                      ? '未找到活跃客户端'
+                                      : '未找到匹配的客户端',
                                   message: _searchQuery.isEmpty
-                                      ? 'No clients are currently connected to the router. Pull down to refresh the list.'
-                                      : 'No clients match your search criteria. Try a different search term.',
+                                      ? '当前没有客户端连接到路由器。下拉拉刷新列表。'
+                                      : '没有客户端符合您的搜索条件。请尝试不同的搜索词。',
                                   icon: Icons.people_outline,
                                 )
                               : ListView.separated(
@@ -402,7 +402,7 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
                               Icons.person_outline,
                               color: colorScheme.primary,
                               size: 22,
-                              semanticLabel: 'Client icon',
+                              semanticLabel: '客户端图标',
                             ),
                           ),
                         ),
@@ -413,8 +413,8 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
                             message:
                                 widget.client.connectionType ==
                                     ConnectionType.unknown
-                                ? 'Unknown connection type'
-                                : 'Client is online',
+                                ? '未知连接类型'
+                                : '客户端在线',
                             child: Container(
                               width: 10,
                               height: 10,
@@ -446,7 +446,7 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
                             widget.client.hostname,
                             style: LuciTextStyles.cardTitle(context),
                             semanticsLabel:
-                                'Client hostname: ${widget.client.hostname}',
+                                '客户端主机名：${widget.client.hostname}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -464,7 +464,7 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
                             _buildMinimalClientSubtitle(widget.client),
                             style: LuciTextStyles.cardSubtitle(context),
                             semanticsLabel:
-                                'Client details: ${_buildMinimalClientSubtitle(widget.client)}',
+                                '客户端详情：${_buildMinimalClientSubtitle(widget.client)}',
                           ),
                           if (widget.client.vendor != null &&
                               widget.client.vendor!.isNotEmpty)
@@ -477,7 +477,7 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              semanticsLabel: 'Vendor: ${widget.client.vendor}',
+                              semanticsLabel: '供应商：${widget.client.vendor}',
                             ),
                         ],
                       ),
@@ -492,8 +492,8 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
                       color: colorScheme.onSurfaceVariant,
                       size: 26,
                       semanticLabel: widget.isExpanded
-                          ? 'Collapse details'
-                          : 'Expand details',
+                          ? '折叠详情'
+                          : '展开详情',
                     ),
                   ],
                 ),
@@ -528,13 +528,13 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
         fgColor = colorScheme.onPrimaryContainer;
         break;
       case ConnectionType.wired:
-        label = 'Wired';
+        label = '有线';
         icon = Icons.settings_ethernet;
         bgColor = colorScheme.secondaryContainer;
         fgColor = colorScheme.onSecondaryContainer;
         break;
       default:
-        label = 'Unknown';
+        label = '未知';
         icon = Icons.devices_other_outlined;
         bgColor = colorScheme.surfaceContainerHighest;
         fgColor = colorScheme.onSurfaceVariant;
@@ -596,7 +596,7 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
                         child: Icon(
                           Icons.copy_all_outlined,
                           size: 16,
-                          semanticLabel: 'Copy',
+                          semanticLabel: '复制',
                         ),
                       ),
                     ),
@@ -618,50 +618,50 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
       child: Column(
         children: [
           detailRow(
-            'IP Address',
+            'IP 地址',
             client.ipAddress,
             onTap: () =>
-                _copyToClipboard(context, client.ipAddress, 'IP Address'),
-            semanticsLabel: 'IP Address: ${client.ipAddress}',
+                _copyToClipboard(context, client.ipAddress, 'IP 地址'),
+            semanticsLabel: 'IP 地址：${client.ipAddress}',
           ),
           if (client.ipv6Addresses != null && client.ipv6Addresses!.isNotEmpty)
             ...client.ipv6Addresses!.map(
               (ipv6) => detailRow(
-                'IPv6 Address',
+                'IPv6 地址',
                 ipv6,
-                onTap: () => _copyToClipboard(context, ipv6, 'IPv6 Address'),
-                semanticsLabel: 'IPv6 Address: $ipv6',
+                onTap: () => _copyToClipboard(context, ipv6, 'IPv6 地址'),
+                semanticsLabel: 'IPv6 地址：$ipv6',
               ),
             ),
           detailRow(
-            'MAC Address',
+            'MAC 地址',
             client.macAddress,
             onTap: () =>
-                _copyToClipboard(context, client.macAddress, 'MAC Address'),
-            semanticsLabel: 'MAC Address: ${client.macAddress}',
+                _copyToClipboard(context, client.macAddress, 'MAC 地址'),
+            semanticsLabel: 'MAC 地址：${client.macAddress}',
           ),
           if (client.vendor != null && client.vendor!.isNotEmpty)
             detailRow(
-              'Vendor',
+              '供应商',
               client.vendor!,
-              semanticsLabel: 'Vendor: ${client.vendor}',
+              semanticsLabel: '供应商：${client.vendor}',
             ),
           if (client.dnsName != null && client.dnsName!.isNotEmpty)
             detailRow(
-              'DNS Name',
+              'DNS 名称',
               client.dnsName!,
-              semanticsLabel: 'DNS Name: ${client.dnsName}',
+              semanticsLabel: 'DNS 名称：${client.dnsName}',
             ),
           const Divider(height: 1, indent: 16, endIndent: 16),
           const SizedBox(height: 8),
           detailRow(
-            'Lease Time Remaining',
+            '剩余租赁时间',
             client.formattedLeaseTime,
-            valueColor: client.formattedLeaseTime == 'Expired'
+            valueColor: client.formattedLeaseTime == '已过期'
                 ? theme.colorScheme.error
                 : null,
             semanticsLabel:
-                'Lease Time Remaining: ${client.formattedLeaseTime}',
+                '剩余租赁时间：${client.formattedLeaseTime}',
           ),
           const SizedBox(height: 8),
         ],
@@ -693,7 +693,7 @@ class _UnifiedClientCardState extends State<_UnifiedClientCard>
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$label copied to clipboard'),
+        content: Text('$label 已复制到剪贴板'),
         duration: const Duration(seconds: 2),
       ),
     );

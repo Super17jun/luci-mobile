@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'OpenWrt Router Control',
+                'OpenWrt 路由器控制',
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   fontWeight: FontWeight.w500,

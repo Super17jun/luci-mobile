@@ -22,7 +22,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
     final List<model.Router> routers = appState.routers;
     final String? selectedId = appState.selectedRouter?.id;
     return Scaffold(
-      appBar: const LuciAppBar(title: 'Routers', showBack: true),
+      appBar: const LuciAppBar(title: '路由器', showBack: true),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         children: [
@@ -39,7 +39,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                         ),
                         Center(
                           child: Text(
-                            'No routers added yet.',
+                            '还未添加任何路由器。',
                             style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(
                                   color: Theme.of(
@@ -139,20 +139,20 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                 final confirm = await showDialog<bool>(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text('Remove Router'),
+                                    title: const Text('删除路由器'),
                                     content: Text(
-                                      'Are you sure you want to remove $routerLabel?',
+                                      '您确定要删除 $routerLabel 吗?',
                                     ),
                                     actions: [
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, false),
-                                        child: const Text('Cancel'),
+                                        child: const Text('取消'),
                                       ),
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, true),
-                                        child: const Text('Remove'),
+                                        child: const Text('删除'),
                                       ),
                                     ],
                                   ),
@@ -172,7 +172,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                             width: double.infinity,
                             child: ElevatedButton.icon(
                               icon: const Icon(Icons.add, size: 20),
-                              label: const Text('Add Router'),
+                              label: const Text('添加路由器'),
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
@@ -250,7 +250,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                             ipController,
                                                         decoration: const InputDecoration(
                                                           labelText:
-                                                              'Router Address',
+                                                              '路由器地址',
                                                           border:
                                                               OutlineInputBorder(),
                                                           prefixIcon: Icon(
@@ -258,12 +258,12 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                 .router_outlined,
                                                           ),
                                                           helperText:
-                                                              'e.g. 192.168.1.1, router.local:8080, https://192.168.1.1',
+                                                              '例如 192.168.1.1、router.local:8080、https://192.168.1.1',
                                                         ),
                                                         validator: (value) {
                                                           if (value == null ||
                                                               value.isEmpty) {
-                                                            return 'Please enter the router address';
+                                                            return '请输入路由器地址';
                                                           }
                                                           final parsed =
                                                               UrlParser.parse(
@@ -272,7 +272,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                           if (!parsed.isValid) {
                                                             return parsed
                                                                     .error ??
-                                                                'Invalid address format';
+                                                                '无效的地址格式';
                                                           }
                                                           return null;
                                                         },
@@ -289,7 +289,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                         controller:
                                                             userController,
                                                         decoration: const InputDecoration(
-                                                          labelText: 'Username',
+                                                          labelText: '用户名',
                                                           border:
                                                               OutlineInputBorder(),
                                                           prefixIcon: Icon(
@@ -297,12 +297,12 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                 .person_outline,
                                                           ),
                                                           helperText:
-                                                              'Default is usually root',
+                                                              '默认通常是 root',
                                                         ),
                                                         validator: (v) =>
                                                             v == null ||
                                                                 v.isEmpty
-                                                            ? 'Required'
+                                                            ? '必填项'
                                                             : null,
                                                         autofillHints: const [
                                                           AutofillHints
@@ -316,14 +316,14 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                         controller:
                                                             passController,
                                                         decoration: InputDecoration(
-                                                          labelText: 'Password',
+                                                          labelText: '密码',
                                                           border:
                                                               const OutlineInputBorder(),
                                                           prefixIcon: const Icon(
                                                             Icons.lock_outline,
                                                           ),
                                                           helperText:
-                                                              'Your router password',
+                                                              '您的路由器密码',
                                                           suffixIcon: IconButton(
                                                             icon: Icon(
                                                               obscureText
@@ -337,8 +337,9 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                   !obscureText,
                                                             ),
                                                             tooltip: obscureText
-                                                                ? 'Hide password'
-                                                                : 'Show password',
+                                                                ? '隐藏密码'
+                                                                : '显示密码',
+                                                          ),
                                                           ),
                                                         ),
                                                         obscureText:
@@ -438,7 +439,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                       setState(() {
                                                                         errorMessage =
                                                                             parsedUrl.error ??
-                                                                            'Invalid address format';
+                                                                            '无效的地址格式';
                                                                       });
                                                                       return;
                                                                     }
@@ -459,7 +460,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                     )) {
                                                                       setState(() {
                                                                         errorMessage =
-                                                                            'Router already exists.';
+                                                                            '路由器已存在。';
                                                                       });
                                                                       return;
                                                                     }
@@ -489,7 +490,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                         setState(() {
                                                                           errorMessage =
                                                                               appState.errorMessage ??
-                                                                              'Failed to connect: Invalid credentials or host unreachable.';
+                                                                              '连接失败：凭证无效或主机无法访问。';
                                                                           isConnecting =
                                                                               false;
                                                                         });
@@ -508,7 +509,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                     ) {
                                                                       setState(() {
                                                                         errorMessage =
-                                                                            'Failed to connect: ${e.toString()}';
+                                                                            '连接失败：${e.toString()}';
                                                                         isConnecting =
                                                                             false;
                                                                       });
@@ -581,7 +582,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                       width: 12,
                                                                     ),
                                                                     const Text(
-                                                                      'Connecting...',
+                                                                      '连接中...',
                                                                     ),
                                                                   ],
                                                                 )
@@ -599,7 +600,7 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                     SizedBox(
                                                                       width: 12,
                                                                     ),
-                                                                    Text('Add'),
+                                                                    Text('添加'),
                                                                   ],
                                                                 ),
                                                         ),
@@ -683,7 +684,7 @@ class _UnifiedRouterCard extends StatelessWidget {
                       ? colorScheme.primary
                       : colorScheme.onSurface,
                   size: 22,
-                  semanticLabel: 'Router icon',
+                  semanticLabel: '路由器图标',
                 ),
               ),
               const SizedBox(width: 16),
@@ -719,7 +720,7 @@ class _UnifiedRouterCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Chip(
-                    label: const Text('Active'),
+                    label: const Text('活跃'),
                     labelStyle: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onPrimary,
                     ),
@@ -745,7 +746,7 @@ class _UnifiedRouterCard extends StatelessWidget {
               if (onDelete != null)
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
-                  tooltip: 'Remove',
+                  tooltip: '删除',
                   onPressed: onDelete,
                 ),
             ],
