@@ -340,7 +340,6 @@ class _ManageRoutersScreenState extends ConsumerState<ManageRoutersScreen> {
                                                                 ? '隐藏密码'
                                                                 : '显示密码',
                                                           ),
-                                                          ),
                                                         ),
                                                         obscureText:
                                                             obscureText,
