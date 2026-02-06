@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:luci_mobile/screens/dashboard_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:luci_mobile/main.dart';
 import 'package:luci_mobile/screens/clients_screen.dart';
+import 'package:luci_mobile/screens/dashboard_screen.dart';
 import 'package:luci_mobile/screens/interfaces_screen.dart';
 import 'package:luci_mobile/screens/more_screen.dart';
-import 'package:luci_mobile/main.dart';
+// 引入 Nikki 页面和状态
+import 'package:luci_mobile/screens/nikki_screen.dart';
+import 'package:luci_mobile/state/app_state.dart';
+import 'package:luci_mobile/state/nikki_state.dart';
 import 'package:luci_mobile/widgets/luci_navigation_enhancements.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   final int? initialTab;
@@ -34,12 +38,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   void didUpdateWidget(MainScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Handle parameter changes (important for iOS navigation)
     if (widget.interfaceToScroll != oldWidget.interfaceToScroll) {
       _currentInterfaceToScroll = widget.interfaceToScroll;
     }
 
-    // Handle initial tab changes
     if (widget.initialTab != oldWidget.initialTab &&
         widget.initialTab != null) {
       _selectedIndex = widget.initialTab!;
@@ -54,22 +56,24 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     }
   }
 
+  // 🔥 修改 1: 在列表中加入 NikkiScreen
   List<Widget> get _widgetOptions => [
-    const DashboardScreen(),
-    const ClientsScreen(),
-    InterfacesScreen(
-      scrollToInterface: _currentInterfaceToScroll,
-      onScrollComplete: _clearInterfaceToScroll,
-    ),
-    const MoreScreen(),
-  ];
+        const DashboardScreen(),
+        const ClientsScreen(),
+        InterfacesScreen(
+          scrollToInterface: _currentInterfaceToScroll,
+          onScrollComplete: _clearInterfaceToScroll,
+        ),
+        const NikkiScreen(), // 新增在这里 (Index 3)
+        const MoreScreen(), // More 变成了 Index 4
+      ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    // Clear interface scroll state when navigating away from Interfaces tab
+    // 如果离开 Interfaces 页面 (Index 2)，清除滚动状态
     if (_selectedIndex != 2 && _currentInterfaceToScroll != null) {
       _clearInterfaceToScroll();
     }
@@ -77,18 +81,23 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen for requestedTab in AppState
+    // 🔥 修改 2: 监听路由器切换事件，自动同步 IP 给 Nikki
+    ref.listen(appStateProvider.select((s) => s.selectedRouter), (previous, next) {
+      if (next != null) {
+        // 如果切换了路由器，通知 Nikki 更新目标 IP
+        ref.read(nikkiConfigProvider.notifier).updateIp(next.ipAddress);
+      }
+    });
+
     final appState = ref.watch(appStateProvider);
     if (appState.requestedTab != null &&
         appState.requestedTab != _selectedIndex) {
-      // Store the values before the callback to avoid null reference issues
       final requestedTab = appState.requestedTab!;
       final requestedInterface = appState.requestedInterfaceToScroll;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
           _selectedIndex = requestedTab;
-          // Update interface to scroll if provided
           if (requestedInterface != null) {
             _currentInterfaceToScroll = requestedInterface;
           }
@@ -97,6 +106,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         appState.requestedInterfaceToScroll = null;
       });
     }
+
     return Scaffold(
       body: Center(
         child: LuciTabTransition(
@@ -109,16 +119,20 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           final isRebooting = ref.watch(
             appStateProvider.select((state) => state.isRebooting),
           );
+          
+          // 🔥 修改 3: 调整重启时的禁用逻辑 (因为 More 现在是 index 4)
           Color? getTabColor(int index) =>
-              (isRebooting && index != 3) ? Colors.grey.withAlpha(128) : null;
+              (isRebooting && index != 4) ? Colors.grey.withAlpha(128) : null;
           double getTabOpacity(int index) =>
-              (isRebooting && index != 3) ? 0.5 : 1.0;
+              (isRebooting && index != 4) ? 0.5 : 1.0;
+              
           return NavigationBar(
             onDestinationSelected: (index) {
-              if (isRebooting && index != 3) return; // Only allow 'More' tab
+              if (isRebooting && index != 4) return; // 重启时只允许点击 More
               _onItemTapped(index);
             },
             selectedIndex: _selectedIndex,
+            // 🔥 修改 4: 添加 Nikki 的导航图标
             destinations: [
               NavigationDestination(
                 selectedIcon: Opacity(
@@ -153,13 +167,26 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 ),
                 label: '接口',
               ),
+              // --- 新增 Nikki 导航项 ---
               NavigationDestination(
                 selectedIcon: Opacity(
                   opacity: getTabOpacity(3),
-                  child: Icon(Icons.more_horiz),
+                  child: Icon(Icons.electrical_services, color: getTabColor(3)),
                 ),
                 icon: Opacity(
                   opacity: getTabOpacity(3),
+                  child: Icon(Icons.electrical_services_outlined, color: getTabColor(3)),
+                ),
+                label: 'Nikki',
+              ),
+              // ---------------------
+              NavigationDestination(
+                selectedIcon: Opacity(
+                  opacity: getTabOpacity(4),
+                  child: Icon(Icons.more_horiz),
+                ),
+                icon: Opacity(
+                  opacity: getTabOpacity(4),
                   child: Icon(Icons.more_horiz_outlined),
                 ),
                 label: '更多',

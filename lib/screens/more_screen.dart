@@ -13,8 +13,7 @@ import 'package:luci_mobile/screens/manage_routers_screen.dart';
 import 'package:luci_mobile/utils/http_client_manager.dart';
 import 'package:luci_mobile/state/app_state.dart';
 
-// 引入你的 Nikki 页面
-import 'nikki_screen.dart'; 
+// 这里删除了 'nikki_screen.dart' 的引用，因为这里不需要跳转了
 
 class _MoreScreenSection extends StatelessWidget {
   final List<Widget> tiles;
@@ -323,31 +322,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
             const LuciSectionHeader('应用程序'),
             _MoreScreenSection(
               tiles: [
-                //------------------------------------------
-                // 🔥 修改后的 Nikki 按钮：支持自动获取 IP 🔥
-                // ------------------------------------------
-                _buildMoreTile(
-                  context,
-                  icon: Icons.electrical_services,
-                  iconColor: Colors.deepPurple,
-                  title: 'Nikki 代理控制',
-                  subtitle: '管理节点与策略组',
-                  onTap: () {
-                    // 1. 获取 App 状态
-                    final appState = ref.read(appStateProvider);
-                    
-                    // 2. ✅ 修正：使用 'ipAddress' 属性
-                    final String? currentIp = appState.selectedRouter?.ipAddress;
-
-                    // 3. 跳转
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => NikkiScreen(initialIp: currentIp), 
-                      ),
-                    );
-                  },
-                ),
-                // ------------------------------------------
+                // 🧹 这里之前是你添加的 Nikki 按钮，现在已经删除了，保持干净
 
                 _buildMoreTile(
                   context,
