@@ -11,7 +11,7 @@ class NikkiConfig {
   NikkiConfig({
     this.ip = '',
     this.port = '9090',
-    this.secret = '523897', // 默认密码
+    this.secret = '', // 默认密码
     this.isConfigured = false,
   });
 
