@@ -3,91 +3,124 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class NikkiScreen extends StatefulWidget {
-  // 假设路由器IP是 192.168.1.1，如果你的不一样，请在调用时修改或在这里改
-  final String routerIp;
+  // 接收从外部传入的初始 IP（比如 App 当前连接的路由器 IP）
+  final String? initialIp;
   
-  const NikkiScreen({super.key, this.routerIp = '192.168.2.1'});
+  const NikkiScreen({super.key, this.initialIp});
 
   @override
   State<NikkiScreen> createState() => _NikkiScreenState();
 }
 
 class _NikkiScreenState extends State<NikkiScreen> {
-  final String apiPort = '9090';
-  final String apiSecret = '523897';
+  // --- 配置状态 ---
+  late TextEditingController _ipController;
+  final TextEditingController _portController = TextEditingController(text: '9090');
+  final TextEditingController _secretController = TextEditingController(text: '523897'); // 默认填你的密钥
   
-  bool _isLoading = true;
+  // --- 页面状态 ---
+  // true: 显示配置/登录页; false: 显示节点管理页
+  bool _isConfiguring = true; 
+  bool _isLoading = false;
   String _errorMessage = '';
   
-  // 存放解析后的策略组数据
-  // 格式: [{"name": "节点选择", "now": "香港01", "all": ["香港01", "美国02"...]}]
+  // --- 数据 ---
   List<Map<String, dynamic>> _proxyGroups = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchProxies();
+    // 如果传入了 IP，就填入输入框；否则留空或填默认
+    _ipController = TextEditingController(text: widget.initialIp ?? '192.168.2.1');
+    
+    // 如果有传入 IP，可以尝试自动连接（可选，这里我设定为手动点击连接更安全）
   }
 
-  // 获取节点信息
-  Future<void> _fetchProxies() async {
+  @override
+  void dispose() {
+    _ipController.dispose();
+    _portController.dispose();
+    _secretController.dispose();
+    super.dispose();
+  }
+
+  // --- 核心逻辑：尝试连接并获取数据 ---
+  Future<void> _connectAndFetch() async {
     setState(() {
       _isLoading = true;
       _errorMessage = '';
     });
 
-    final url = Uri.parse('http://${widget.routerIp}:$apiPort/proxies');
+    final ip = _ipController.text.trim();
+    final port = _portController.text.trim();
+    final secret = _secretController.text.trim();
+
+    if (ip.isEmpty || port.isEmpty) {
+      setState(() {
+        _errorMessage = '请填写 IP 和端口';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final url = Uri.parse('http://$ip:$port/proxies');
     
     try {
+      // 1. 发起请求测试连接
       final response = await http.get(
         url,
         headers: {
-          'Authorization': 'Bearer $apiSecret', // 鉴权头
+          'Authorization': 'Bearer $secret',
           'Content-Type': 'application/json',
         },
-      );
+      ).timeout(const Duration(seconds: 5)); // 5秒超时防止卡死
 
+      // 2. 处理结果
       if (response.statusCode == 200) {
-        final data = json.decode(utf8.decode(response.bodyBytes)); // 防止中文乱码
+        final data = json.decode(utf8.decode(response.bodyBytes));
         final proxies = data['proxies'] as Map<String, dynamic>;
         
         List<Map<String, dynamic>> groups = [];
-        
-        // 筛选出类型为 "Selector" (策略组) 的项
         proxies.forEach((key, value) {
           if (value['type'] == 'Selector') {
             groups.add({
               'name': key,
-              'now': value['now'], // 当前选中的节点
-              'all': List<String>.from(value['all']), // 所有可选节点
+              'now': value['now'],
+              'all': List<String>.from(value['all']),
             });
           }
         });
-
-        // 简单的排序，让常用的排前面（可选）
+        
+        // 排序
         groups.sort((a, b) => a['name'].compareTo(b['name']));
 
         setState(() {
           _proxyGroups = groups;
+          _isConfiguring = false; // 切换到管理界面
+          _isLoading = false;
+        });
+      } else if (response.statusCode == 401) {
+        setState(() {
+          _errorMessage = '密钥错误 (401 Unauthorized)';
           _isLoading = false;
         });
       } else {
         setState(() {
-          _errorMessage = '连接失败: ${response.statusCode}';
+          _errorMessage = '连接失败: 代码 ${response.statusCode}';
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = '无法连接到 Nikki。\n请检查:\n1. 手机是否已连上WiFi\n2. Info.plist 是否允许了 HTTP 请求\n错误: $e';
+        _errorMessage = '无法连接到 Nikki。\n请检查 IP/端口是否正确，\n以及 Info.plist 是否允许 HTTP 请求。';
         _isLoading = false;
       });
     }
   }
 
-  // 切换节点
+  // --- 核心逻辑：切换节点 ---
   Future<void> _selectProxy(String groupName, String nodeName) async {
-    // 乐观更新 UI：不等服务器返回，先在界面上改过来，体验更流畅
+    // 乐观更新
     setState(() {
       final index = _proxyGroups.indexWhere((g) => g['name'] == groupName);
       if (index != -1) {
@@ -95,48 +128,152 @@ class _NikkiScreenState extends State<NikkiScreen> {
       }
     });
 
-    // 发送请求给路由器
-    // URL encoded 因为组名可能包含特殊字符
+    final ip = _ipController.text.trim();
+    final port = _portController.text.trim();
+    final secret = _secretController.text.trim();
+    
     final encodedGroup = Uri.encodeComponent(groupName);
-    final url = Uri.parse('http://${widget.routerIp}:$apiPort/proxies/$encodedGroup');
+    final url = Uri.parse('http://$ip:$port/proxies/$encodedGroup');
 
     try {
       await http.put(
         url,
         headers: {
-          'Authorization': 'Bearer $apiSecret',
+          'Authorization': 'Bearer $secret',
           'Content-Type': 'application/json',
         },
         body: json.encode({'name': nodeName}),
       );
-      // 成功后可以不提示，或者 SnackBar 提示
     } catch (e) {
-      // 失败了再提示
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('切换失败: $e')),
       );
-      // 最好这里重新刷新一下数据
-      _fetchProxies();
+      _connectAndFetch(); // 失败后刷新数据
     }
   }
 
-  // 弹出选择节点的对话框
+  // --- 界面 1: 登录配置表单 ---
+  Widget _buildConfigForm() {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.electrical_services, size: 32, color: Colors.deepPurple),
+                    SizedBox(width: 12),
+                    Text('连接 Nikki', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: _ipController,
+                  decoration: const InputDecoration(
+                    labelText: '管理地址 (IP)',
+                    prefixIcon: Icon(Icons.router),
+                    border: OutlineInputBorder(),
+                    hintText: '例如 192.168.2.1',
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _portController,
+                  decoration: const InputDecoration(
+                    labelText: 'API 端口',
+                    prefixIcon: Icon(Icons.login),
+                    border: OutlineInputBorder(),
+                    hintText: '默认 9090',
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _secretController,
+                  decoration: const InputDecoration(
+                    labelText: 'API 密钥 (Secret)',
+                    prefixIcon: Icon(Icons.vpn_key),
+                    border: OutlineInputBorder(),
+                    hintText: '留空则无密码',
+                  ),
+                  obscureText: true, // 隐藏密码
+                ),
+                const SizedBox(height: 24),
+                if (_errorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Text(
+                      _errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _connectAndFetch,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: _isLoading 
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('连接', style: TextStyle(fontSize: 16)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- 界面 2: 节点列表 (复用你之前的逻辑) ---
+  Widget _buildDashboard() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(10),
+      itemCount: _proxyGroups.length,
+      itemBuilder: (context, index) {
+        final group = _proxyGroups[index];
+        return Card(
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          child: ListTile(
+            leading: const Icon(Icons.dns_outlined, color: Colors.blueAccent),
+            title: Text(group['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text(
+              '当前: ${group['now']}',
+              style: const TextStyle(color: Colors.green),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () => _showNodeSelectionDialog(group),
+          ),
+        );
+      },
+    );
+  }
+  
+  // 弹窗逻辑 (和之前一样)
   void _showNodeSelectionDialog(Map<String, dynamic> group) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (context) {
         final allNodes = group['all'] as List<String>;
         return Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(
-                '选择 ${group['name']} 的节点',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              child: Text('选择 ${group['name']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             Expanded(
               child: ListView.builder(
@@ -146,15 +283,13 @@ class _NikkiScreenState extends State<NikkiScreen> {
                   final isSelected = node == group['now'];
                   return ListTile(
                     title: Text(node, style: TextStyle(
-                      color: isSelected ? Colors.blue : null,
+                      color: isSelected ? Colors.deepPurple : null,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     )),
-                    trailing: isSelected ? const Icon(Icons.check, color: Colors.blue) : null,
+                    trailing: isSelected ? const Icon(Icons.check, color: Colors.deepPurple) : null,
                     onTap: () {
-                      Navigator.pop(context); // 关闭弹窗
-                      if (!isSelected) {
-                        _selectProxy(group['name'], node);
-                      }
+                      Navigator.pop(context);
+                      if (!isSelected) _selectProxy(group['name'], node);
                     },
                   );
                 },
@@ -170,53 +305,26 @@ class _NikkiScreenState extends State<NikkiScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nikki 节点控制'),
+        title: Text(_isConfiguring ? '配置连接' : 'Nikki 代理控制'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchProxies,
-          ),
+          if (!_isConfiguring) // 如果在管理页，显示“设置”按钮切回配置
+            IconButton(
+              icon: const Icon(Icons.settings),
+              tooltip: '修改连接配置',
+              onPressed: () {
+                setState(() {
+                  _isConfiguring = true; // 切回配置页
+                });
+              },
+            ),
+          if (!_isConfiguring) // 刷新按钮
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _connectAndFetch,
+            ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage.isNotEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text(_errorMessage, textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        ElevatedButton(onPressed: _fetchProxies, child: const Text('重试'))
-                      ],
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(10),
-                  itemCount: _proxyGroups.length,
-                  itemBuilder: (context, index) {
-                    final group = _proxyGroups[index];
-                    return Card(
-                      elevation: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      child: ListTile(
-                        leading: const Icon(Icons.dns_outlined, color: Colors.blueAccent),
-                        title: Text(group['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text(
-                          '当前: ${group['now']}',
-                          style: const TextStyle(color: Colors.green),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () => _showNodeSelectionDialog(group),
-                      ),
-                    );
-                  },
-                ),
+      body: _isConfiguring ? _buildConfigForm() : _buildDashboard(),
     );
   }
 }

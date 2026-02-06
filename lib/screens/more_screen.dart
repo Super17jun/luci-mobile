@@ -323,26 +323,30 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
             const LuciSectionHeader('应用程序'),
             _MoreScreenSection(
               tiles: [
-                // ------------------------------------------
-                // 🔥 新增的 Nikki 代理控制按钮开始 🔥
+                //------------------------------------------
+                // 🔥 修改后的 Nikki 按钮：支持自动获取 IP 🔥
                 // ------------------------------------------
                 _buildMoreTile(
                   context,
-                  icon: Icons.electrical_services, // 使用了“连接/服务”图标，也可以换成 Icons.cloud
-                  iconColor: Colors.deepPurple,    // 使用紫色以示区分
+                  icon: Icons.electrical_services,
+                  iconColor: Colors.deepPurple,
                   title: 'Nikki 代理控制',
                   subtitle: '管理节点与策略组',
                   onTap: () {
+                    // 1. 获取 App 状态
+                    final appState = ref.read(appStateProvider);
+                    
+                    // 2. ✅ 修正：使用 'ipAddress' 属性
+                    final String? currentIp = appState.selectedRouter?.ipAddress;
+
+                    // 3. 跳转
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        // 这里的 IP 如果变动，可以在这里修改
-                        builder: (context) => const NikkiScreen(routerIp: '192.168.1.1'), 
+                        builder: (context) => NikkiScreen(initialIp: currentIp), 
                       ),
                     );
                   },
                 ),
-                // ------------------------------------------
-                // 🔥 新增结束 🔥
                 // ------------------------------------------
 
                 _buildMoreTile(
