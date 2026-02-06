@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luci_mobile/main.dart';
@@ -13,6 +12,9 @@ import 'package:luci_mobile/config/app_config.dart';
 import 'package:luci_mobile/screens/manage_routers_screen.dart';
 import 'package:luci_mobile/utils/http_client_manager.dart';
 import 'package:luci_mobile/state/app_state.dart';
+
+// 引入你的 Nikki 页面
+import 'nikki_screen.dart'; 
 
 class _MoreScreenSection extends StatelessWidget {
   final List<Widget> tiles;
@@ -50,7 +52,6 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
   @override
   void initState() {
     super.initState();
-    // Do not use context here
   }
 
   @override
@@ -62,7 +63,6 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
 
   @override
   void dispose() {
-    // Clear the callback before calling super.dispose()
     _appState?.onRouterBackOnline = null;
     super.dispose();
   }
@@ -71,7 +71,6 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
     if (mounted) {
       final theme = Theme.of(context);
       final colorScheme = theme.colorScheme;
-      // Dismiss the warning snackbar
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -123,7 +122,6 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
               child: const Text('登出'),
               onPressed: () async {
                 appState.logout();
-                // Clear all accepted certificates on logout
                 await HttpClientManager().clearAcceptedCertificates();
                 if (context.mounted) {
                   unawaited(
@@ -162,7 +160,6 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
               child: const Text('重启'),
               onPressed: () async {
                 Navigator.of(context).pop();
-                // Show persistent warning snackbar
                 final theme = Theme.of(context);
                 final colorScheme = theme.colorScheme;
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -194,7 +191,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                       horizontal: 24,
                       vertical: 16,
                     ),
-                    duration: const Duration(days: 1), // effectively indefinite
+                    duration: const Duration(days: 1),
                   ),
                 );
                 final success = await appState.reboot();
@@ -202,9 +199,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      success
-                          ? '重启命令已成功发送。'
-                          : '重启命令发送失败。',
+                      success ? '重启命令已成功发送。' : '重启命令发送失败。',
                     ),
                   ),
                 );
@@ -328,6 +323,28 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
             const LuciSectionHeader('应用程序'),
             _MoreScreenSection(
               tiles: [
+                // ------------------------------------------
+                // 🔥 新增的 Nikki 代理控制按钮开始 🔥
+                // ------------------------------------------
+                _buildMoreTile(
+                  context,
+                  icon: Icons.electrical_services, // 使用了“连接/服务”图标，也可以换成 Icons.cloud
+                  iconColor: Colors.deepPurple,    // 使用紫色以示区分
+                  title: 'Nikki 代理控制',
+                  subtitle: '管理节点与策略组',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        // 这里的 IP 如果变动，可以在这里修改
+                        builder: (context) => const NikkiScreen(routerIp: '192.168.1.1'), 
+                      ),
+                    );
+                  },
+                ),
+                // ------------------------------------------
+                // 🔥 新增结束 🔥
+                // ------------------------------------------
+
                 _buildMoreTile(
                   context,
                   icon: Icons.router,
@@ -397,7 +414,6 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
     bool showSpinner = false,
   }) {
     final theme = Theme.of(context);
-    // Persistent spinning icon using AnimationController
     Widget spinningIconWidget = Icon(
       icon,
       color: iconColor,
@@ -455,7 +471,6 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
   }
 }
 
-// Persistent spinning icon widget
 class _SpinningIcon extends StatefulWidget {
   final IconData icon;
   final Color color;
@@ -494,7 +509,7 @@ class _SpinningIconState extends State<_SpinningIcon>
       animation: _controller,
       builder: (context, child) {
         return Transform.rotate(
-          angle: _controller.value * 6.28319, // 2 * pi
+          angle: _controller.value * 6.28319,
           child: Icon(
             widget.icon,
             color: widget.color,
